@@ -2,11 +2,14 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using QuizMe.WS.Models;
+using QuizMe.WS.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +30,15 @@ namespace QuizMe.WS
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(
+                options =>
+                {
+                    options.JsonSerializerOptions.IgnoreNullValues = true;
+                }
+            );
+            services.AddDbContext<QuizzifyDBContext>(
+                options => options.UseSqlServer(CommonConstants.DbConnectionString)
+                );
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "QuizMe.WS", Version = "v1" });
